@@ -1,0 +1,303 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>
+        Goals · NutriScan AI
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/css/style.css"
+    >
+
+</head>
+
+<body>
+
+    <div
+        id="view"
+        class="hide"
+    >
+
+        <div class="card">
+
+            <h3>
+                Main goal
+            </h3>
+
+            <div
+                class="tabs"
+                id="tb"
+            >
+
+                <button
+                    class="btn"
+                    data-g="Weight loss"
+                >
+                    ⚖️ Weight loss
+                </button>
+
+                <button
+                    class="btn"
+                    data-g="Gain weight"
+                >
+                    📈 Gain weight
+                </button>
+
+                <button
+                    class="btn"
+                    data-g="Muscle gain"
+                >
+                    💪 Muscle gain
+                </button>
+
+                <button
+                    class="btn"
+                    data-g="Maintain"
+                >
+                    🌿 Maintain
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <form
+            class="card mt"
+            id="f"
+        >
+
+            <h3>
+                Daily targets
+            </h3>
+
+            <div class="grid g3">
+
+                <div class="field">
+
+                    <label>
+                        Calories (kcal)
+                    </label>
+
+                    <input
+                        class="input"
+                        name="calTarget"
+                        type="number"
+                        min="800"
+                        max="6000"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Protein (g)
+                    </label>
+
+                    <input
+                        class="input"
+                        name="proteinTarget"
+                        type="number"
+                        min="20"
+                        max="400"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Water (L)
+                    </label>
+
+                    <input
+                        class="input"
+                        name="waterTarget"
+                        type="number"
+                        step="0.1"
+                        min="0.5"
+                        max="8"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <button class="btn primary">
+                Save goals
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <script src="/js/app.js"></script>
+
+
+    <script>
+
+        (async () => {
+
+            const me = await NS.shell(
+                "goals",
+                'Goals',
+                'Choose what you are working towards'
+            );
+
+
+            let goal = me.goal;
+
+
+            const tb =
+                document.getElementById('tb');
+
+            const f =
+                document.getElementById('f');
+
+
+            const mark = () =>
+                [...tb.children].forEach(
+                    b =>
+                        b.classList.toggle(
+                            'on',
+                            b.dataset.g === goal
+                        )
+                );
+
+
+            mark();
+
+
+            for (
+                const k of [
+                    'calTarget',
+                    'proteinTarget',
+                    'waterTarget'
+                ]
+            ) {
+
+                f[k].value = me[k];
+
+            }
+
+
+            const SUG = {
+
+                'Weight loss': [
+                    1800,
+                    70
+                ],
+
+                'Gain weight': [
+                    2800,
+                    90
+                ],
+
+                'Muscle gain': [
+                    2600,
+                    120
+                ],
+
+                'Maintain': [
+                    2200,
+                    70
+                ]
+
+            };
+
+
+            tb.onclick = e => {
+
+                const g =
+                    e.target.dataset.g;
+
+
+                if (g) {
+
+                    goal = g;
+
+                    mark();
+
+
+                    f.calTarget.value =
+                        SUG[g][0];
+
+
+                    f.proteinTarget.value =
+                        SUG[g][1];
+
+
+                    NS.toast(
+                        'Suggested targets filled in. Adjust if needed, then save.'
+                    );
+
+                }
+
+            };
+
+
+            f.onsubmit = async e => {
+
+                e.preventDefault();
+
+
+                try {
+
+                    await NS.api(
+                        '/me',
+                        {
+                            method: 'PUT',
+
+                            body: {
+                                goal,
+                                ...Object.fromEntries(
+                                    new FormData(f)
+                                )
+                            }
+                        }
+                    );
+
+
+                    NS.toast(
+                        'Goals saved'
+                    );
+
+                }
+
+                catch (x) {
+
+                    NS.toast(
+                        x.message,
+                        true
+                    );
+
+                }
+
+            };
+
+
+        })().catch(
+            e => console.error(e)
+        );
+
+    </script>
+
+</body>
+
+</html>

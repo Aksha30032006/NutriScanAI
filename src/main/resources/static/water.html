@@ -1,0 +1,215 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width,initial-scale=1"
+    >
+
+    <title>
+        Water tracker · NutriScan AI
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/css/style.css"
+    >
+
+</head>
+
+<body>
+
+    <div
+        id="view"
+        class="hide"
+    >
+
+        <div class="grid g2">
+
+            <div class="card">
+
+                <h3 id="t"></h3>
+
+                <div
+                    class="glasses"
+                    id="gl"
+                ></div>
+
+                <div class="bar">
+
+                    <span
+                        id="b"
+                        style="width:0"
+                    ></span>
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Log a drink
+                </h3>
+
+                <div class="list">
+
+                    <button
+                        class="btn primary"
+                        data-ml="250"
+                    >
+                        + Glass (250 ml)
+                    </button>
+
+
+                    <button
+                        class="btn"
+                        data-ml="500"
+                    >
+                        + Bottle (500 ml)
+                    </button>
+
+
+                    <button
+                        class="btn danger"
+                        id="rs"
+                    >
+                        Reset today
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="/js/app.js"></script>
+
+
+    <script>
+
+        (async () => {
+
+            const me =
+                await NS.shell(
+                    "water",
+                    'Water tracker',
+                    'Small sips add up'
+                );
+
+
+            let w =
+                await NS.api('/water');
+
+
+            const draw = () => {
+
+                const per =
+                    w.target / 5;
+
+
+                const n =
+                    5;
+
+
+                document.getElementById('t').textContent =
+                    `${(w.ml / 1000).toFixed(2)} L of ${(w.target / 1000).toFixed(1)} L`;
+
+
+                document.getElementById('gl').innerHTML =
+                    Array.from(
+                        {
+                            length: n
+                        },
+                        (_, i) =>
+                            `<div class="glass"><i style="height:${Math.max(0, Math.min(1, (w.ml - i * per) / per)) * 100}%"></i></div>`
+                    ).join('');
+
+
+                document.getElementById('b').style.width =
+                    Math.min(
+                        100,
+                        w.ml / w.target * 100
+                    ) + '%';
+
+            };
+
+
+            draw();
+
+
+            document.querySelector('.list').onclick =
+                async e => {
+
+                    const ml =
+                        e.target.dataset.ml;
+
+
+                    if (ml) {
+
+                        w =
+                            await NS.api(
+                                '/water',
+                                {
+                                    method: 'POST',
+                                    body: {
+                                        ml: +ml
+                                    }
+                                }
+                            );
+
+
+                        draw();
+
+
+                        if (
+                            w.ml >= w.target
+                        )
+
+                            NS.toast(
+                                'Daily water goal reached 🎉'
+                            );
+
+                    }
+
+                };
+
+
+            document.getElementById('rs').onclick =
+                async () => {
+
+                    w =
+                        await NS.api(
+                            '/water',
+                            {
+                                method: 'POST',
+                                body: {
+                                    reset: true
+                                }
+                            }
+                        );
+
+
+                    draw();
+
+                };
+
+
+        })().catch(
+            e => console.error(e)
+        );
+
+    </script>
+
+</body>
+
+</html>

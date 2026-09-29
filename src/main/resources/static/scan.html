@@ -1,0 +1,378 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>
+        Scan your food · NutriScan AI
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/css/style.css"
+    >
+
+</head>
+
+<body>
+
+    <div
+        id="view"
+        class="hide"
+    >
+
+        <div class="grid g21">
+
+            <div class="card">
+
+                <label
+                    class="drop"
+                    id="drop"
+                    for="file"
+                >
+
+                    <input
+                        type="file"
+                        id="file"
+                        accept="image/*"
+                        class="hide"
+                    >
+
+
+                    <div id="ph">
+
+                        <div style="font-size:3rem">
+                            ＋
+                        </div>
+
+                        <b>
+                            Upload food image
+                        </b>
+
+                        <p style="color:var(--mut)">
+                            Drag a photo here or tap to browse
+                        </p>
+
+                    </div>
+
+
+                    <img
+                        id="pv"
+                        class="hide"
+                        alt="Preview"
+                    >
+
+                </label>
+
+
+                <div class="field mt">
+
+                    <label for="nm">
+                        What is it? (optional, helps accuracy)
+                    </label>
+
+                    <input
+                        class="input"
+                        id="nm"
+                        placeholder="e.g. chicken biryani"
+                    >
+
+                </div>
+
+
+                <button
+                    class="btn primary"
+                    id="go"
+                    disabled
+                >
+                    Analyse meal
+                </button>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    How it works
+                </h3>
+
+                <div
+                    class="steps"
+                    id="steps"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="/js/app.js"></script>
+
+
+    <script>
+
+        (async () => {
+
+            const me = await NS.shell(
+                "scan",
+                'Scan your food',
+                'Let AI identify what is on your plate'
+            );
+
+
+            const S = [
+                'Upload food image',
+                'Image processing',
+                'AI food detection',
+                'Food identified',
+                'Nutrition analysis',
+                'Personalised recommendation'
+            ];
+
+
+            const st =
+                document.getElementById('steps');
+
+
+            const draw = n => {
+
+                st.innerHTML =
+                    S
+
+                        .map(
+                            (x, i) =>
+                                `<div class="step ${i < n ? 'done' : i === n ? 'act' : ''}">
+
+                                    <span class="dot">
+                                        ${i < n ? '✓' : ''}
+                                    </span>
+
+                                    ${x}
+
+                                </div>`
+                        )
+
+                        .join('');
+
+            };
+
+
+            draw(-1);
+
+
+            const f =
+                document.getElementById('file');
+
+
+            const pv =
+                document.getElementById('pv');
+
+
+            const go =
+                document.getElementById('go');
+
+
+            const drop =
+                document.getElementById('drop');
+
+
+            const show = () => {
+
+                const file =
+                    f.files[0];
+
+
+                if (!file) {
+
+                    return;
+
+                }
+
+
+                pv.src =
+                    URL.createObjectURL(file);
+
+
+                pv.classList.remove('hide');
+
+
+                document
+                    .getElementById('ph')
+                    .classList.add('hide');
+
+
+                go.disabled = false;
+
+
+                draw(1);
+
+            };
+
+
+            f.onchange =
+                show;
+
+
+            [
+                'dragover',
+                'dragenter'
+            ].forEach(
+                e =>
+                    drop.addEventListener(
+                        e,
+                        x => {
+
+                            x.preventDefault();
+
+                            drop.classList.add('over');
+
+                        }
+                    )
+            );
+
+
+            [
+                'dragleave',
+                'drop'
+            ].forEach(
+                e =>
+                    drop.addEventListener(
+                        e,
+                        x => {
+
+                            x.preventDefault();
+
+                            drop.classList.remove('over');
+
+                        }
+                    )
+            );
+
+
+            drop.addEventListener(
+                'drop',
+                x => {
+
+                    f.files =
+                        x.dataTransfer.files;
+
+                    show();
+
+                }
+            );
+
+
+            go.onclick =
+                async () => {
+
+                    go.disabled = true;
+
+                    go.textContent =
+                        'Analysing…';
+
+
+                    let n = 1;
+
+
+                    draw(n);
+
+
+                    const iv =
+                        setInterval(
+                            () =>
+                                draw(
+                                    Math.min(
+                                        ++n,
+                                        5
+                                    )
+                                ),
+                            350
+                        );
+
+
+                    const fd =
+                        new FormData();
+
+
+                    fd.append(
+                        'image',
+                        f.files[0]
+                    );
+
+
+                    fd.append(
+                        'name',
+                        document
+                            .getElementById('nm')
+                            .value
+                    );
+
+
+                    try {
+
+                        const s =
+                            await NS.api(
+                                '/scans',
+                                {
+                                    method: 'POST',
+                                    body: fd
+                                }
+                            );
+
+
+                        clearInterval(iv);
+
+
+                        draw(6);
+
+
+                        setTimeout(
+                            () =>
+                                location.href =
+                                    '/result.html?id=' + s.id,
+                            500
+                        );
+
+                    }
+
+                    catch (e) {
+
+                        clearInterval(iv);
+
+
+                        NS.toast(
+                            e.message,
+                            true
+                        );
+
+
+                        go.disabled = false;
+
+
+                        go.textContent =
+                            'Analyse meal';
+
+                    }
+
+                };
+
+        })().catch(
+            e => console.error(e)
+        );
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,180 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>
+        Scan history · NutriScan AI
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/css/style.css"
+    >
+
+</head>
+
+<body>
+
+    <div
+        id="view"
+        class="hide"
+    >
+
+        <div class="card">
+
+            <div class="field">
+
+                <input
+                    class="input"
+                    id="q"
+                    placeholder="Search your scans"
+                >
+
+            </div>
+
+
+            <div
+                class="list"
+                id="l"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <script src="/js/app.js"></script>
+
+
+    <script>
+
+        (async () => {
+
+            const me = await NS.shell(
+                "history",
+                'Scan history',
+                'Every meal you have scanned'
+            );
+
+            let all = await NS.api('/scans');
+
+            const l =
+                document.getElementById('l');
+
+
+            const draw = () => {
+
+                const q =
+                    document
+                        .getElementById('q')
+                        .value
+                        .toLowerCase();
+
+                const x =
+                    all.filter(
+                        s =>
+                            s.name
+                                .toLowerCase()
+                                .includes(q)
+                    );
+
+
+                l.innerHTML = x.length
+
+                    ? x.map(
+                        s =>
+                            `<div style="display:flex;gap:8px;align-items:center">
+
+                                <div style="flex:1">
+
+                                    ${NS.scanRow(s)}
+
+                                </div>
+
+                                <button
+                                    class="btn danger sm"
+                                    data-id="${s.id}"
+                                >
+                                    Delete
+                                </button>
+
+                            </div>`
+                    ).join('')
+
+                    : `<p class="empty">
+
+                            No scans found.
+
+                            <a
+                                href="/scan.html"
+                                style="color:var(--leaf)"
+                            >
+                                Scan a meal
+                            </a>
+
+                       </p>`;
+
+            };
+
+
+            draw();
+
+
+            document.getElementById('q').oninput = draw;
+
+
+            l.onclick = async e => {
+
+                const id =
+                    e.target.dataset.id;
+
+                if (
+                    !id ||
+                    !confirm('Delete this scan?')
+                ) {
+                    return;
+                }
+
+
+                await NS.api(
+                    '/scans/' + id,
+                    {
+                        method: 'DELETE'
+                    }
+                );
+
+
+                all =
+                    all.filter(
+                        s =>
+                            s.id !== id
+                    );
+
+
+                draw();
+
+
+                NS.toast(
+                    'Scan deleted'
+                );
+
+            };
+
+        })().catch(
+            e => console.error(e)
+        );
+
+    </script>
+
+</body>
+
+</html>

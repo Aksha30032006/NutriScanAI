@@ -1,0 +1,154 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>
+        Help & support · NutriScan AI
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/css/style.css"
+    >
+
+</head>
+
+<body>
+
+    <div
+        id="view"
+        class="hide"
+    >
+
+        <div class="grid g21">
+
+            <div class="list">
+
+                <details>
+
+                    <summary>
+                        How does the food scan work?
+                    </summary>
+
+                    <p>
+                        Upload a photo. The app processes it, detects the food, calculates nutrition for one serving and gives tips for your goal. Typing the food name in the scan box improves accuracy.
+                    </p>
+
+                </details>
+
+
+                <details>
+
+                    <summary>
+                        Are the calories exact?
+                    </summary>
+
+                    <p>
+                        They are estimates for a typical serving. Your actual portion may differ, so treat them as a guide.
+                    </p>
+
+                </details>
+
+
+                <details>
+
+                    <summary>
+                        How do I change my daily targets?
+                    </summary>
+
+                    <p>
+                        Open Goals from the menu, pick your goal and adjust calories, protein and water.
+                    </p>
+
+                </details>
+
+
+                <details>
+
+                    <summary>
+                        Can I delete my data?
+                    </summary>
+
+                    <p>
+                        Yes. Delete single scans from History or remove your whole account in Settings.
+                    </p>
+
+                </details>
+
+            </div>
+
+
+            <form
+                class="card"
+                id="f"
+            >
+
+                <h3>
+                    Contact support
+                </h3>
+
+                <div class="field">
+
+                    <textarea
+                        class="input"
+                        rows="5"
+                        required
+                        placeholder="Tell us what you need help with"
+                    ></textarea>
+
+                </div>
+
+                <button class="btn primary">
+                    Send message
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="/js/app.js"></script>
+
+
+    <script>
+
+        (async () => {
+
+            const me = await NS.shell(
+                "help",
+                'Help & support',
+                'Answers and a way to reach us'
+            );
+
+            document.getElementById('f').onsubmit = e => {
+
+                e.preventDefault();
+
+                e.target.reset();
+
+                NS.toast(
+                    'Message sent. We will reply by email.'
+                );
+
+            };
+
+        })().catch(
+            e => console.error(e)
+        );
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,249 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>
+        Feedback & reviews · NutriScan AI
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/css/style.css"
+    >
+
+</head>
+
+<body>
+
+    <div
+        id="view"
+        class="hide"
+    >
+
+        <div class="grid g21">
+
+            <div class="card">
+
+                <h3>
+                    Recent reviews
+                </h3>
+
+                <div
+                    class="list"
+                    id="l"
+                ></div>
+
+            </div>
+
+
+            <form
+                class="card"
+                id="f"
+            >
+
+                <h3>
+                    Share your experience
+                </h3>
+
+                <div
+                    class="starpick"
+                    id="sp"
+                ></div>
+
+
+                <div
+                    class="field mt"
+                >
+
+                    <textarea
+                        class="input"
+                        name="text"
+                        rows="5"
+                        placeholder="How has NutriScan AI helped you?"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <button class="btn primary">
+                    Post review
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="/js/app.js"></script>
+
+
+    <script>
+
+        (async () => {
+
+            const me = await NS.shell(
+                "reviews",
+                'Feedback & reviews',
+                'What the community says'
+            );
+
+
+            let rating = 5;
+
+
+            const sp =
+                document.getElementById('sp');
+
+
+            const stars = () => {
+
+                sp.innerHTML =
+                    [1, 2, 3, 4, 5]
+
+                        .map(
+                            i =>
+                                `<span
+                                    data-i="${i}"
+                                    class="${i <= rating ? 'on' : ''}"
+                                >
+                                    ★
+                                </span>`
+                        )
+
+                        .join('');
+
+            };
+
+
+            stars();
+
+
+            sp.onclick = e => {
+
+                if (e.target.dataset.i) {
+
+                    rating =
+                        +e.target.dataset.i;
+
+                    stars();
+
+                }
+
+            };
+
+
+            const load = async () => {
+
+                const r =
+                    await NS.api('/reviews');
+
+
+                document.getElementById('l').innerHTML =
+
+                    r.length
+
+                        ? r
+
+                            .map(
+                                x =>
+                                    `<div class="row">
+
+                                        <div class="avatar">
+                                            ${NS.esc(x.name[0])}
+                                        </div>
+
+                                        <div class="grow">
+
+                                            <div class="stars">
+                                                ${'★'.repeat(x.rating)}
+                                            </div>
+
+                                            ${NS.esc(x.text)}
+
+                                            <br>
+
+                                            <small>
+                                                ${NS.esc(x.name)}
+                                            </small>
+
+                                        </div>
+
+                                    </div>`
+                            )
+
+                            .join('')
+
+                        : `<p class="empty">
+                                No reviews yet. Write the first one.
+                           </p>`;
+
+            };
+
+
+            load();
+
+
+            document.getElementById('f').onsubmit =
+                async e => {
+
+                    e.preventDefault();
+
+
+                    try {
+
+                        await NS.api(
+                            '/reviews',
+                            {
+                                method: 'POST',
+                                body: {
+                                    rating,
+                                    text: e.target.text.value
+                                }
+                            }
+                        );
+
+
+                        e.target.reset();
+
+
+                        NS.toast(
+                            'Review posted'
+                        );
+
+
+                        load();
+
+                    }
+
+                    catch (x) {
+
+                        NS.toast(
+                            x.message,
+                            true
+                        );
+
+                    }
+
+                };
+
+        })().catch(
+            e => console.error(e)
+        );
+
+    </script>
+
+</body>
+
+</html>
