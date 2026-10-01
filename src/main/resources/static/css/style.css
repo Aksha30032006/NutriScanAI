@@ -142,5 +142,93 @@ select.input option {
 
 
 
+/* ===== GLOBAL PAGE ALIGNMENT FIX ===== */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* Main page containers */
+.container,
+.main-container,
+.page-container,
+.content,
+.main-content {
+    width: min(1200px, 92%);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Page headings */
+.page-header {
+    width: 100%;
+    margin-bottom: 28px;
+}
+
+/* Dashboard and content sections */
+.dashboard,
+.dashboard-container,
+.page-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* Cards and grids */
+.grid,
+.cards-grid,
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+/* Images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Forms */
+form {
+    max-width: 100%;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+    .container,
+    .main-container,
+    .page-container,
+    .content,
+    .main-content {
+        width: 94%;
+    }
+
+    .dashboard,
+    .dashboard-container,
+    .page-content {
+        padding: 16px;
+    }
+
+    .grid,
+    .cards-grid,
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
 
