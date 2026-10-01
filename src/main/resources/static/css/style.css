@@ -137,3 +137,229 @@ textarea {
 select.input option {
     background: #0c1b42;
 }
+
+
+
+
+
+
+
+/* =================================
+   NUTRISCAN AI - LANDING PAGE LAYOUT
+================================= */
+
+.pubwrap {
+    width: min(1180px, 92%);
+    margin: 0 auto;
+}
+
+/* NAVBAR */
+
+.pubnav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.pubnav > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pubnav .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.pubnav .brand i {
+    font-style: normal;
+}
+
+/* HERO SECTION */
+
+.hero {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    align-items: center;
+    gap: 55px;
+    min-height: 470px;
+    padding: 65px 0;
+}
+
+.hero h1 {
+    font-size: clamp(2.5rem, 5vw, 4.3rem);
+    line-height: 1.08;
+    max-width: 650px;
+    margin-bottom: 22px;
+}
+
+.hero p {
+    color: var(--mut);
+    font-size: 1.08rem;
+    max-width: 600px;
+    margin-bottom: 25px;
+}
+
+.hero .btn {
+    margin: 5px 8px 5px 0;
+}
+
+/* FOOD PLATE */
+
+.plate {
+    position: relative;
+    width: min(100%, 350px);
+    aspect-ratio: 1;
+    margin: auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9rem;
+    background:
+        radial-gradient(circle, #fff 0 40%, #e8edf7 41% 44%, #243b65 45% 48%, transparent 49%);
+    border: 1px solid var(--line);
+    box-shadow: 0 25px 70px rgba(0, 0, 0, .3);
+}
+
+.tag {
+    position: absolute;
+    padding: 10px 15px;
+    border-radius: 30px;
+    background: #14264c;
+    border: 1px solid var(--line);
+    color: var(--txt);
+    font-size: .9rem;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .25);
+}
+
+/* SECTIONS */
+
+.section {
+    padding: 55px 0;
+}
+
+.section h2 {
+    font-size: clamp(1.7rem, 3vw, 2.3rem);
+    margin-bottom: 28px;
+}
+
+/* CARD GRID */
+
+.grid {
+    display: grid;
+    gap: 20px;
+}
+
+.g3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.g4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* CARDS */
+
+.card {
+    min-width: 0;
+    padding: 24px;
+    border-radius: var(--r);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    transition: transform .2s, border-color .2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--leaf);
+}
+
+.card h3 {
+    font-size: 1.15rem;
+    margin-bottom: 12px;
+}
+
+.card p {
+    color: var(--mut);
+    line-height: 1.7;
+}
+
+.stars {
+    color: var(--citrus);
+    letter-spacing: 3px;
+}
+
+/* EMPTY STATE */
+
+.empty {
+    color: var(--mut);
+    text-align: center;
+    padding: 25px;
+}
+
+/* MOBILE RESPONSIVE */
+
+@media (max-width: 900px) {
+    .hero {
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+
+    .g4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .pubwrap {
+        width: 90%;
+    }
+
+    .pubnav {
+        flex-wrap: wrap;
+    }
+
+    .pubnav .brand {
+        font-size: 1.15rem;
+    }
+
+    .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 45px 0;
+    }
+
+    .hero h1,
+    .hero p {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .plate {
+        width: min(80%, 280px);
+        font-size: 7rem;
+    }
+
+    .g3,
+    .g4 {
+        grid-template-columns: 1fr;
+    }
+
+    .section {
+        padding: 35px 0;
+    }
+
+    .card {
+        padding: 20px;
+    }
+}
