@@ -17,7 +17,8 @@ public class Scan {
     public String image;
     public Instant createdAt;
     public boolean ai;
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Column(length = 500)
+
+    @Convert(converter = StringListConverter.class)
+    @Column(length = 2000)
     public List<String> tips = new ArrayList<>();
 }
