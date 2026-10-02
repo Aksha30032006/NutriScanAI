@@ -16,6 +16,11 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Override
+    public void addCorsMappings(CorsRegistry r) {
+        r.addMapping("/**").allowedOriginPatterns("*").allowedMethods("*").allowedHeaders("*");
+    }
+
+    @Override
     public void addResourceHandlers(ResourceHandlerRegistry r) {
         Path dir = Paths.get("uploads").toAbsolutePath();
         try { Files.createDirectories(dir); } catch (Exception ignored) { }

@@ -27,3 +27,25 @@ Set `ANTHROPIC_API_KEY` before starting. Without it, the food name you type (or 
 - `src/main/resources/static`: the 15 HTML pages, CSS and JS
 - `uploads/`: scanned food images
 - Put your Figma food collage at `src/main/resources/static/img/bg.jpg` for the background.
+
+## Deploy (so the layout and API work online)
+All page links, CSS and JS use relative paths, so the pages work from any folder or sub-path.
+
+**Option A: whole app on one host (recommended)**
+Host Spring Boot (Railway, Render, a VPS). It serves both pages and API, so leave `static/js/config.js` as `window.API_BASE = ''`.
+Set these environment variables on the host:
+- `DB_URL` = `jdbc:mysql://HOST:3306/DBNAME?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC`
+- `DB_USER`, `DB_PASSWORD`
+- `JWT_SECRET` = any long random text
+- `ANTHROPIC_API_KEY` (optional, for AI)
+- `PORT` is set by most hosts automatically.
+Build command: `mvn clean package -DskipTests`. Start command: `java -jar target/nutriscan-ai-1.0.0.jar`
+
+**Option B: pages on Netlify / GitHub Pages, backend elsewhere**
+1. Upload only the `static` folder contents to the static host.
+2. Open `js/config.js` and set `window.API_BASE = 'https://your-backend-url';`
+3. The backend already allows cross-origin requests (CORS).
+
+## Opening pages locally
+Do not double-click the HTML files for the full app. Start the backend and open http://localhost:8080.
+(With VS Code Live Server the pages automatically call http://localhost:8080.)
